@@ -1,3 +1,4 @@
+import videojs from "video.js";
 (function () {
   var defaults = {
     0: {
