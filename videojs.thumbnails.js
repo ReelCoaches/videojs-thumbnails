@@ -1,10 +1,10 @@
-(function() {
+(function () {
   var defaults = {
-      0: {
-        src: 'example-thumbnail.png'
-      }
-    },
-    extend = function() {
+    0: {
+      src: '/empty.png'
+    }
+  },
+    extend = function () {
       var args, target, i, object, property;
       args = Array.prototype.slice.call(arguments);
       target = args.shift() || {};
@@ -22,8 +22,8 @@
       }
       return target;
     },
-    getComputedStyle = function(el, pseudo) {
-      return function(prop) {
+    getComputedStyle = function (el, pseudo) {
+      return function (prop) {
         if (window.getComputedStyle) {
           return window.getComputedStyle(el, pseudo)[prop];
         } else {
@@ -31,13 +31,13 @@
         }
       };
     },
-    offsetParent = function(el) {
+    offsetParent = function (el) {
       if (el.nodeName !== 'HTML' && getComputedStyle(el)('position') === 'static') {
         return offsetParent(el.offsetParent);
       }
       return el;
     },
-    getVisibleWidth = function(el, width) {
+    getVisibleWidth = function (el, width) {
       var clip;
 
       if (width) {
@@ -53,7 +53,7 @@
       }
       return 0;
     },
-    getScrollOffset = function() {
+    getScrollOffset = function () {
       if (window.pageXOffset) {
         return {
           x: window.pageXOffset,
@@ -69,22 +69,22 @@
   /**
    * register the thubmnails plugin
    */
-  videojs.plugin('thumbnails', function(options) {
+  videojs.registerPlugin('thumbnails', function (options) {
     var div, settings, img, player, progressControl, duration, moveListener, moveCancel;
     settings = extend({}, defaults, options);
     player = this;
 
-    (function() {
+    (function () {
       var progressControl, addFakeActive, removeFakeActive;
       // Android doesn't support :active and :hover on non-anchor and non-button elements
       // so, we need to fake the :active selector for thumbnails to show up.
       if (navigator.userAgent.toLowerCase().indexOf("android") !== -1) {
         progressControl = player.controlBar.progressControl;
 
-        addFakeActive = function() {
+        addFakeActive = function () {
           progressControl.addClass('fake-active');
         };
-        removeFakeActive = function() {
+        removeFakeActive = function () {
           progressControl.removeClass('fake-active');
         };
 
@@ -99,27 +99,30 @@
     div.className = 'vjs-thumbnail-holder';
     img = document.createElement('img');
     div.appendChild(img);
+
     img.src = settings['0'].src;
     img.className = 'vjs-thumbnail';
     extend(img.style, settings['0'].style);
 
     // center the thumbnail over the cursor if an offset wasn't provided
+    // currently being set by css 
     if (!img.style.left && !img.style.right) {
-      img.onload = function() {
-        img.style.left = -(img.naturalWidth / 2) + 'px';
+      img.onload = function () {
+        // img.style.left = "-100px";
+        // img.style.top = "-90px"; // (img.naturalWidth / 2) + 'px';
       };
     }
 
     // keep track of the duration to calculate correct thumbnail to display
     duration = player.duration();
-    
+
     // when the container is MP4
-    player.on('durationchange', function(event) {
+    player.on('durationchange', function (event) {
       duration = player.duration();
     });
 
     // when the container is HLS
-    player.on('loadedmetadata', function(event) {
+    player.on('loadedmetadata', function (event) {
       duration = player.duration();
     });
 
@@ -127,7 +130,7 @@
     progressControl = player.controlBar.progressControl;
     progressControl.el().appendChild(div);
 
-    moveListener = function(event) {
+    moveListener = function (event) {
       var mouseTime, time, active, left, setting, pageX, right, width, halfWidth, pageXOffset, clientRect;
       active = 0;
       pageXOffset = getScrollOffset().x;
@@ -167,20 +170,20 @@
       halfWidth = width / 2;
 
       // make sure that the thumbnail doesn't fall off the right side of the left side of the player
-      if ( (left + halfWidth) > right ) {
+      if ((left + halfWidth) > right) {
         left -= (left + halfWidth) - right;
       } else if (left < halfWidth) {
         left = halfWidth;
       }
 
-      div.style.left = left + 'px';
+      div.style.left = (left - 100) + 'px'; // Adjusting to left 100 px to center it initially and avoid jumping glitch
     };
 
     // update the thumbnail while hovering
     progressControl.on('mousemove', moveListener);
     progressControl.on('touchmove', moveListener);
 
-    moveCancel = function(event) {
+    moveCancel = function (event) {
       div.style.left = '-1000px';
     };
 
