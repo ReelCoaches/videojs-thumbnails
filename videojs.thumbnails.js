@@ -1,10 +1,9 @@
-
 (function () {
   var defaults = {
-      0: {
-        src: 'example-thumbnail.png'
-      }
-    },
+    0: {
+      src: '/empty.png'
+    }
+  },
     extend = function () {
       var args, target, i, object, property;
       args = Array.prototype.slice.call(arguments);
@@ -70,7 +69,7 @@
   /**
    * register the thubmnails plugin
    */
-  videojs.plugin('thumbnails', function (options) {
+  videojs.registerPlugin('thumbnails', function (options) {
     var div, settings, img, player, progressControl, duration, moveListener, moveCancel;
     settings = extend({}, defaults, options);
     player = this;
@@ -107,15 +106,17 @@
     div.className = 'vjs-thumbnail-holder';
     img = document.createElement('img');
     div.appendChild(img);
+
     img.src = settings['0'].src;
     img.className = 'vjs-thumbnail';
     extend(img.style, settings['0'].style);
 
     // center the thumbnail over the cursor if an offset wasn't provided
+    // currently being set by css 
     if (!img.style.left && !img.style.right) {
       img.onload = function () {
-        img.style.left = "-100px";
-        img.style.top = "-90px"; // (img.naturalWidth / 2) + 'px';
+        // img.style.left = "-100px";
+        // img.style.top = "-90px"; // (img.naturalWidth / 2) + 'px';
       };
     }
 
@@ -182,7 +183,7 @@
         left = halfWidth;
       }
 
-      div.style.left = left + 'px';
+      div.style.left = (left - 100) + 'px'; // Adjusting to left 100 px to center it initially and avoid jumping glitch
     };
 
     // update the thumbnail while hovering
