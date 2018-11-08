@@ -1,7 +1,10 @@
 /* a wrapper element that tracks the mouse vertically */
 .vjs-thumbnail-holder {
   position: absolute;
-  left: -1000px;
+  left: -100px;
+  top: -105px;
+  height: 100px;
+  width: 200px;
 }
 
 /* the thumbnail image itself */
