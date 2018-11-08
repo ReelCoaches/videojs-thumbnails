@@ -94,6 +94,13 @@
       }
     })();
 
+    //remove any existing thumbnails
+    const currentThumbnails = document.getElementsByClassName('vjs-thumbnail-holder');
+    if (currentThumbnails.length > 0) {
+      for (let index = currentThumbnails.length - 1; index >= 0; index--) {
+        currentThumbnails[index].parentNode.removeChild(currentThumbnails[index]);
+      }
+    }
     // create the thumbnail
     div = document.createElement('div');
     div.className = 'vjs-thumbnail-holder';
