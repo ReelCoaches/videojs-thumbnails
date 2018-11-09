@@ -1,6 +1,7 @@
 {
   "name": "videojs-thumbnails",
   "description": "progress bar thumbnails plugin for video.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:brightcove/videojs-thumbnails.git"

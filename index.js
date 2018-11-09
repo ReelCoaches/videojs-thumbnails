@@ -1,0 +1,1 @@
+require("./videojs.thumbnails.js");
