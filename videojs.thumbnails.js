@@ -1,3 +1,4 @@
+const videojs = require("video.js");
 (function () {
   var defaults = {
     0: {
