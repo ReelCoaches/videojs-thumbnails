@@ -1,10 +1,10 @@
 const videojs = require("video.js");
 (function () {
   var defaults = {
-    0: {
-      src: '/empty.png'
-    }
-  },
+      0: {
+        src: '/assets/toolkit/images/empty.png'
+      }
+    },
     extend = function () {
       var args, target, i, object, property;
       args = Array.prototype.slice.call(arguments);
@@ -95,13 +95,6 @@ const videojs = require("video.js");
       }
     })();
 
-    //remove any existing thumbnails
-    const currentThumbnails = document.getElementsByClassName('vjs-thumbnail-holder');
-    if (currentThumbnails.length > 0) {
-      for (let index = currentThumbnails.length - 1; index >= 0; index--) {
-        currentThumbnails[index].parentNode.removeChild(currentThumbnails[index]);
-      }
-    }
     // create the thumbnail
     div = document.createElement('div');
     div.className = 'vjs-thumbnail-holder';
@@ -154,15 +147,31 @@ const videojs = require("video.js");
       left = pageX || (event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft);
       // subtract the page offset of the positioned offset parent
       left -= offsetParent(progressControl.el()).getBoundingClientRect().left + pageXOffset;
+      // adjusted for added padding but still is not accurate, using tooltiptext as primary instead
+      const paddingLeft = parseInt(window.getComputedStyle(progressControl.el(), null).getPropertyValue('padding-left'), 10);
+      const paddingRight = parseInt(window.getComputedStyle(progressControl.el(), null).getPropertyValue('padding-right'), 10) - 1;
 
       // apply updated styles to the thumbnail if necessary
       // mouseTime is the position of the mouse along the progress control bar
       // `left` applies to the mouse position relative to the player so we need
       // to remove the progress control's left offset to know the mouse position
       // relative to the progress control
-      mouseTime = Math.floor((left - progressControl.el().offsetLeft) / progressControl.width() * duration);
+
+      const currentTooltipText = progressControl.getChild("SeekBar").getChild("MouseTimeDisplay").children()[0].el_.innerHTML;
+      if (currentTooltipText === "-:-") {
+        mouseTime = Math.floor((left - progressControl.el().offsetLeft) / (progressControl.width() - paddingLeft - paddingRight) * duration) + 1;
+
+      } else {
+        const a = currentTooltipText.split(":");
+        if (a.length === 3) {
+          mouseTime = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+        } else {
+          mouseTime = ((+a[0]) * 60 + (+a[1]));
+        }
+
+      }
       for (time in settings) {
-        if (mouseTime > time) {
+        if (mouseTime >= time) {
           active = Math.max(active, time);
         }
       }
